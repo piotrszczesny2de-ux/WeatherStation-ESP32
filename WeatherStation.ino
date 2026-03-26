@@ -31,8 +31,8 @@
 #include <time.h>
 
 // ============ KONFIGURACJA ============
-const char* WIFI_SSID     = "TwojaSiec"       // <-- zmien na swoja siec WiFi;
-const char* WIFI_PASSWORD = "TwojeHaslo"      // <-- zmien na swoje haslo WiFi;
+const char* WIFI_SSID     = "TwojaSiec";       // <-- zmien na swoja siec WiFi
+const char* WIFI_PASSWORD = "TwojeHaslo";      // <-- zmien na swoje haslo WiFi
 
 const float LATITUDE  = 54.15;  // Elblag
 const float LONGITUDE = 19.40;
