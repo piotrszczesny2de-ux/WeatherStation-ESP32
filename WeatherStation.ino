@@ -53,6 +53,9 @@ const unsigned long UPDATE_INTERVAL = 300000; // 5 minut
 const unsigned long SCREEN_INTERVAL = 10000;  // 10 sekund na ekran
 unsigned long lastUpdate = 0;
 unsigned long lastScreenChange = 0;
+unsigned long lastClockUpdate = 0;
+const unsigned long CLOCK_INTERVAL = 1000;
+int lastDisplayedMinute = -1;
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -122,10 +125,17 @@ void setup() {
 void loop() {
   unsigned long now = millis();
 
+  // --- Aktualizacja zegara co 1s ---
+  if (now - lastClockUpdate >= CLOCK_INTERVAL) {
+    lastClockUpdate = now;
+    updateClock();
+  }
+
   // --- Automatyczne przelaczanie ekranow co 10s ---
   if (now - lastScreenChange >= SCREEN_INTERVAL) {
     lastScreenChange = now;
     currentScreen = (currentScreen + 1) % NUM_SCREENS;
+    lastDisplayedMinute = -1;
     drawScreen();
   }
 
@@ -189,6 +199,25 @@ void drawHeader(const char* title) {
     tft.setCursor(248, 10);
     tft.print(timeStr);
   }
+}
+
+// ============ AKTUALIZACJA ZEGARA (tylko przy zmianie minuty) ============
+void updateClock() {
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo, 10)) return;
+
+  int currentMinute = timeinfo.tm_hour * 60 + timeinfo.tm_min;
+  if (currentMinute == lastDisplayedMinute) return;
+  lastDisplayedMinute = currentMinute;
+
+  char timeStr[6];
+  sprintf(timeStr, "%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min);
+
+  tft.fillRect(248, 6, 72, 24, HEADER_COLOR);
+  tft.setTextColor(TEXT_COLOR);
+  tft.setTextSize(2);
+  tft.setCursor(248, 10);
+  tft.print(timeStr);
 }
 
 // =========================================================
